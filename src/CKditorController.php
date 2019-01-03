@@ -128,7 +128,7 @@ class CKditorController extends Controller
         if(isset($_FILES['upload'])){
           // ------ Process your file upload code -------
             $filen = $_FILES['upload']['tmp_name']; 
-            $con_images = "upload/".$_FILES['upload']['name'];
+            $con_images = "a/".$_FILES['upload']['name'];
             move_uploaded_file($filen, $con_images );
             $url = $con_images;
 
