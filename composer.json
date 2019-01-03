@@ -1,0 +1,36 @@
+{
+  "name": "myzero1/yii2-ckeditor",
+  "description": "CKEditor widget for Yii 2",
+  "keywords": ["yii2", "widget", "ckeditor", "wysiwyg", "editor"],
+  "type": "yii2-extension",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "myzero1",
+      "email": "myzero1@sina.com"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/alexantr/yii2-ckeditor/issues",
+    "source": "https://github.com/alexantr/yii2-ckeditor"
+  },
+  "require": {
+    "yiisoft/yii2": "~2.0.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "myzero1\\ckeditor\\": "src"
+    }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://asset-packagist.org"
+    }
+  ],
+  "extra": {
+    "branch-alias": {
+      "dev-master": "dev-master"
+    }
+  }
+}
