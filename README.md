@@ -2,7 +2,7 @@
 
 This extension renders a [CKEditor](http://ckeditor.com/) widget for [Yii framework 2.0](http://www.yiiframework.com).
 
-[![License](https://poser.pugx.org/alexantr/yii2-ckeditor/license)](https://packagist.org/packages/myzero1/yii2-ckeditor)
+[![License](https://poser.pugx.org/myzero1/yii2-ckeditor/license)](https://packagist.org/packages/myzero1/yii2-ckeditor)
 
 ## Installation
 
