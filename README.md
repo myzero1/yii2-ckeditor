@@ -2,42 +2,68 @@
 
 This extension renders a [CKEditor](http://ckeditor.com/) widget for [Yii framework 2.0](http://www.yiiframework.com).
 
-[![Latest Stable Version](https://poser.pugx.org/alexantr/yii2-ckeditor/v/stable)](https://packagist.org/packages/alexantr/yii2-ckeditor)
-[![Total Downloads](https://poser.pugx.org/alexantr/yii2-ckeditor/downloads)](https://packagist.org/packages/alexantr/yii2-ckeditor)
-[![License](https://poser.pugx.org/alexantr/yii2-ckeditor/license)](https://packagist.org/packages/alexantr/yii2-ckeditor)
-[![Build Status](https://travis-ci.org/alexantr/yii2-ckeditor.svg?branch=master)](https://travis-ci.org/alexantr/yii2-ckeditor)
+[![License](https://poser.pugx.org/alexantr/yii2-ckeditor/license)](https://packagist.org/packages/myzero1/yii2-ckeditor)
 
 ## Installation
 
 Install extension through [composer](http://getcomposer.org/):
 
+Either run
+
 ```
-composer require "alexantr/yii2-ckeditor:^1.1"
+php composer.phar require "myzero1/yii2-ckeditor" "*"
+```
+or add
+
+```json
+"myzero1/yii2-ckeditor" : "*"
 ```
 
-## CKEditor version
+to the require section of your application's `composer.json` file.
 
-This extension works with stable `standard-all` build. The `standard-all` build includes all official CKSource
-plugins with only those from the `standard` installation preset compiled into the `ckeditor.js` file and
-enabled in the configuration.
+
+## Config the action for upload
+
+Add the section of your application's `main.json` file, as flowing:
+
+```
+
+return [
+    ......
+    'controllerNamespace' => 'backend\controllers',
+    'controllerMap' => [
+        'ckeditor' => [
+            'class' => 'myzero1\ckeditor\CKditorController',
+            'config' => [
+                'imageFieldName' => 'upload',
+                'imageMaxSize' => 1024*1024*2, // 2M = 1024*1024*2
+                'imageAllowFiles' => ['.jpg', '.jpeg', '.png', '.gif'],
+                'imagePathFormat' => '/upload/image/{yyyy}{mm}{dd}/{time}{rand:8}',
+            ],
+        ]
+    ],
+    'bootstrap' => ['log'],
+    ......
+```
 
 ## Usage
 
 The following code in a view file would render a CKEditor widget:
 
 ```php
-<?= alexantr\ckeditor\CKEditor::widget(['name' => 'attributeName']) ?>
+<?= myzero1\ckeditor\CKEditor::widget(['name' => 'attributeName']) ?>
 ```
 
 Configuring the [CKEditor options](http://docs.ckeditor.com/#!/api/CKEDITOR.config) should be done
 using the `clientOptions` attribute:
 
 ```php
-<?= alexantr\ckeditor\CKEditor::widget([
+<?= myzero1\ckeditor\CKEditor::widget([
     'name' => 'attributeName',
     'clientOptions' => [
-        'extraPlugins' => 'autogrow,colorbutton,colordialog,iframe,justify,showblocks',
-        'removePlugins' => 'resize',
+        'extraPlugins' => 'autogrow,colorbutton,colordialog,iframe,justify,showblocks,preview,image2',
+        // 'extraPlugins' => 'autogrow,colorbutton,colordialog,iframe,justify,showblocks,preview,easyimage',
+        'removePlugins' => 'resize,image',
         'autoGrow_maxHeight' => 900,
         'stylesSet' => [
             ['name' => 'Subscript', 'element' => 'sub'],
@@ -50,52 +76,27 @@ using the `clientOptions` attribute:
 If you want to use the CKEditor widget in an ActiveForm, it can be done like this:
 
 ```php
-<?= $form->field($model, 'attributeName')->widget(alexantr\ckeditor\CKEditor::className()) ?>
+<?= $form->field($model, 'attributeName')->widget(myzero1\ckeditor\CKEditor::className()) ?>
 ```
 
-## Using global configuration
 
-To avoid repeating identical configuration in every widget you can set global configuration in
-`Yii::$app->params`. Options from widget's `clientOptions` will be merged with this configuration. Use `presetName`
-attribute for this functionality:
+If you want to use the CKEditor widget in an ActiveForm,and to configuring the CKEditor options, it can be done like this:
 
 ```php
-<?= alexantr\ckeditor\CKEditor::widget([
-    'name' => 'attributeName',
-    'presetName' => 'ckeditor.customConfig', // will use Yii::$app->params['ckeditor.customConfig']
-]) ?>
-```
+<?= $form->field($model, 'attributeName')->widget(myzero1\ckeditor\CKEditor::className(), [
+        'clientOptions' => [
+            'selectMultiple' => true,
+            'filebrowserImageUploadUrl' => '/ckeditor/upload-image',
+            'imageUploadUrl' => '/ckeditor/upload-image',
+            'extraPlugins' => 'autogrow,colorbutton,colordialog,iframe,justify,showblocks,preview,image2',
+            // 'extraPlugins' => 'autogrow,colorbutton,colordialog,iframe,justify,showblocks,image2,preview,easyimage',
+            'removePlugins' => 'resize,image',
+            'autoGrow_maxHeight' => 900,
+            'stylesSet' => [
+                ['name' => 'Subscript', 'element' => 'sub'],
+                ['name' => 'Superscript', 'element' => 'sup'],
+            ],
+        ],
+    ]) ?>
 
-## Global configuration examples
-
-Usual array:
-
-```php
-'params' => [
-    'ckeditor.customConfig' => [
-        'customConfig' => '/js/myconfig.js',
-        'stylesSet' => 'mystyles:https://www.example.com/editorstyles/styles.js',
-    ],
-]
-```
-
-> **Note:** Aliases support was removed in version 1.1. Use callable strings or anonymous functions instead.
-
-Callable string:
-
-```php
-'ckeditor.customConfig' => 'app\helpers\Editor::getGlobalConfig',
-```
-
-> **Note:** Method `Editor::getGlobalConfig` must return array.
-
-Anonymous function:
-
-```php
-'ckeditor.customConfig' => function () {
-    return [
-        'customConfig' => Yii::getAlias('@web/js/myconfig.js'),
-        'stylesSet' => 'mystyles:' . Yii::getAlias('@web/editorstyles/styles.js'),
-    ];
-},
 ```
