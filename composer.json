@@ -15,7 +15,8 @@
     "source": "https://github.com/alexantr/yii2-ckeditor"
   },
   "require": {
-    "yiisoft/yii2": "~2.0.5"
+    "yiisoft/yii2": "~2.0.5",
+    "ckeditor/ckeditor": "^4.5"
   },
   "autoload": {
     "psr-4": {
