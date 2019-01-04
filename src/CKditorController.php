@@ -201,6 +201,30 @@ class CKditorController extends Controller
         return json_encode( $resultEnd );
     }
 
+
+    /**
+     * 上传图片
+     */
+    public function actionImageUploadTest()
+    {
+        if(isset($_FILES['upload'])){
+          // ------ Process your file upload code -------
+            $filen = $_FILES['upload']['tmp_name']; 
+            $con_images = "a/".$_FILES['upload']['name'];
+            move_uploaded_file($filen, $con_images );
+            $url = $con_images;
+
+            echo json_encode([
+                'uploaded'=>1,
+                'fileName'=>$url,
+                'url'=>'/'.$url,
+            ]);
+            exit;
+        } else {
+            echo "no uploaded file.";
+        }
+    }
+
     /**
      * 上传涂鸦
      */
