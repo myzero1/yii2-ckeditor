@@ -6,29 +6,24 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Json;
-use yii\web\View;
 use yii\widgets\InputWidget;
 
 /**
- * CKEditor input widget uses CKEditor 4
- * @link https://ckeditor.com/ckeditor-4/
+ * Class CKEditor
+ * @package myzero1\ckeditor
  */
 class CKEditor extends InputWidget
 {
     /**
-     * @var string CKEditor CDN base URL
-     */
-    public static $cdnBaseUrl = 'https://cdn.ckeditor.com/4.10.0/standard-all/';
-
-    /**
      * @var array CKEditor options
-     * @see https://docs.ckeditor.com/ckeditor4/latest/api/CKEDITOR_config.html
+     * @see http://docs.ckeditor.com/#!/api/CKEDITOR.config
      */
     public $clientOptions = [];
+
     /**
-     * @var string Path to preset with CKEditor options. Will be merged with $clientOptions.
+     * @var string param name in `Yii::$app->params` with CKEditor predefined config.
      */
-    public $presetPath = '@app/config/ckeditor.php';
+    public $presetName;
 
     /**
      * @inheritdoc
@@ -36,7 +31,9 @@ class CKEditor extends InputWidget
     public function init()
     {
         parent::init();
-        $this->clientOptions = ArrayHelper::merge($this->getPresetConfig(), $this->clientOptions);
+        if ($this->presetName !== null) {
+            $this->clientOptions = ArrayHelper::merge($this->getPresetConfig($this->presetName), $this->clientOptions);
+        }
     }
 
     /**
@@ -44,47 +41,48 @@ class CKEditor extends InputWidget
      */
     public function run()
     {
-        $input = $this->hasModel()
-            ? Html::activeTextarea($this->model, $this->attribute, $this->options)
-            : Html::textarea($this->name, $this->value, $this->options);
+        if ($this->hasModel()) {
+            echo Html::activeTextarea($this->model, $this->attribute, $this->options);
+        } else {
+            echo Html::textarea($this->name, $this->value, $this->options);
+        }
         $this->registerPlugin();
-        return $input;
     }
 
     /**
-     * Registers script
+     * Registers CKEditor plugin
      */
     protected function registerPlugin()
     {
         $id = $this->options['id'];
 
         $view = $this->getView();
-        WidgetAsset::register($view);
+        CKEditorWidgetAsset::register($view);
 
-        $cdnBaseUrl = Html::encode(self::$cdnBaseUrl);
-        $encodedOptions = !empty($this->clientOptions) ? Json::htmlEncode($this->clientOptions) : '{}';
+        $encodedOptions = !empty($this->clientOptions) ? Json::encode($this->clientOptions) : '{}';
 
-        $view->registerJs("var CKEDITOR_BASEPATH = '$cdnBaseUrl';", View::POS_HEAD);
-        $view->registerJs("alexantr.ckEditorWidget.setBaseUrl('$cdnBaseUrl');", View::POS_END);
-        $view->registerJs("alexantr.ckEditorWidget.register('$id', $encodedOptions);", View::POS_END);
+        $js = [];
+        $js[] = "CKEDITOR.replace('$id', $encodedOptions);";
+        $js[] = "myzero1.ckEditorWidget.registerOnChangeHandler('$id');";
+
         if (isset($this->clientOptions['filebrowserUploadUrl']) || isset($this->clientOptions['filebrowserImageUploadUrl'])) {
-            $view->registerJs("alexantr.ckEditorWidget.registerCsrfUploadHandler();", View::POS_END);
+            $js[] = "myzero1.ckEditorWidget.registerCsrfImageUploadHandler();";
         }
+
+        $view->registerJs(implode("\n", $js));
     }
 
     /**
      * Get options config from preset
+     * @param string $presetName
      * @return array
      */
-    protected function getPresetConfig()
+    protected function getPresetConfig($presetName)
     {
-        if (!empty($this->presetPath)) {
-            $configPath = Yii::getAlias($this->presetPath);
-            if (is_file($configPath)) {
-                $config = include $configPath;
-                return is_array($config) ? $config : [];
-            }
+        $config = isset(Yii::$app->params[$presetName]) ? Yii::$app->params[$presetName] : [];
+        if ((is_string($config) && is_callable($config)) || $config instanceof \Closure) {
+            $config = call_user_func($config);
         }
-        return [];
+        return is_array($config) ? $config : [];
     }
 }
