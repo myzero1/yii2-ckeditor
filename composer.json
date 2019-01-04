@@ -11,12 +11,12 @@
     }
   ],
   "support": {
-    "issues": "https://github.com/alexantr/yii2-ckeditor/issues",
-    "source": "https://github.com/alexantr/yii2-ckeditor"
+    "issues": "https://github.com/myzero1/yii2-ckeditor/issues",
+    "source": "https://github.com/myzero1/yii2-ckeditor"
   },
   "require": {
     "yiisoft/yii2": "~2.0.5",
-    "ckeditor/ckeditor": "^4.5"
+    "ckeditor/ckeditor": "^4.999999"
   },
   "autoload": {
     "psr-4": {
