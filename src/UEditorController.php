@@ -7,7 +7,7 @@
  * UEditor版本v1.4.3.1
  * Yii 版本 2.0+
  */
-namespace myzero1\ckeditor;
+namespace crazydb\ueditor;
 
 use yii;
 use yii\imagine\Image;
@@ -18,7 +18,7 @@ use yii\web\Controller;
  * 负责UEditor后台响应
  * @package crazydb\ueditor
  */
-class CKditorController extends Controller
+class UEditorController extends Controller
 {
     /**
      * UEditor的配置
@@ -105,9 +105,6 @@ class CKditorController extends Controller
             $CONFIG = [];
 
         $default = [
-            'imageFieldName' => 'upload',
-            'imageMaxSize' => 1024*1024*2, // 2M = 1024*1024*2
-            'imageAllowFiles' => ['.jpg', '.jpeg', '.png', '.gif'],
             'imagePathFormat' => '/upload/image/{yyyy}{mm}{dd}/{time}{rand:8}',
             'scrawlPathFormat' => '/upload/image/{yyyy}{mm}{dd}/{time}{rand:8}',
             'snapscreenPathFormat' => '/upload/image/{yyyy}{mm}{dd}/{time}{rand:8}',
@@ -158,21 +155,6 @@ class CKditorController extends Controller
     /**
      * 上传图片
      */
-    public function actionUploadImageOld()
-    {
-        $config = [
-            'pathFormat' => $this->config['imagePathFormat'],
-            'maxSize' => $this->config['imageMaxSize'],
-            'allowFiles' => $this->config['imageAllowFiles']
-        ];
-        $fieldName = $this->config['imageFieldName'];
-        $result = $this->upload($fieldName, $config);
-        return $this->show($result);
-    }
-
-    /**
-     * 上传图片
-     */
     public function actionUploadImage()
     {
         $config = [
@@ -182,23 +164,7 @@ class CKditorController extends Controller
         ];
         $fieldName = $this->config['imageFieldName'];
         $result = $this->upload($fieldName, $config);
-
-        if ($result['state'] === 'SUCCESS') {
-            $resultEnd = [
-                'uploaded'=>1,
-                'fileName'=>$result['title'],
-                'url'=>$result['url'],
-            ];
-        } else {
-            $resultEnd = [
-                'uploaded'=>0,
-                'error'=>[
-                    'message' => $result['state'],
-                ]
-            ];
-        }
-
-        return json_encode( $resultEnd );
+        return $this->show($result);
     }
 
     /**
